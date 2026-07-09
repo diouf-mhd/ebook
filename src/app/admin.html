@@ -1,0 +1,339 @@
+<div class="adm">
+
+  <!-- ════════ LOGIN ════════ -->
+  <div class="login-page" *ngIf="!auth">
+    <div class="lp-orb a"></div>
+    <div class="lp-orb b"></div>
+
+    <div class="lp-card">
+      <div class="lp-icon"><i class="fas fa-lock"></i></div>
+      <h1>Administration</h1>
+      <p>Ousseynou Gningue – Site Officiel</p>
+
+      <div class="lp-form">
+        <label>Code d'accès</label>
+        <input
+          type="password"
+          [(ngModel)]="code"
+          name="code"
+          (keyup.enter)="login()"
+          [class.err]="errMsg"
+          [disabled]="locked"
+          placeholder="••••"
+          maxlength="10"
+          autofocus
+        >
+        <div class="lp-err" *ngIf="errMsg">
+          <i class="fas fa-exclamation-circle"></i> {{ errMsg }}
+        </div>
+        <button class="lp-btn" (click)="login()" [disabled]="locked || !code">
+          <i class="fas fa-unlock-alt"></i> Accéder
+        </button>
+        <button class="lp-back" (click)="goSite()">
+          <i class="fas fa-arrow-left"></i> Retour au site
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ LAYOUT ADMIN ════════ -->
+  <div class="adm-layout" *ngIf="auth">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sb-head">
+        <div class="sb-logo"><i class="fas fa-feather-alt"></i></div>
+        <div>
+          <strong>O. Gningue</strong>
+          <span>Admin</span>
+        </div>
+      </div>
+
+      <nav class="sb-nav">
+        <button
+          [class.active]="view === 'dash'"
+          (click)="showDash()"
+        >
+          <i class="fas fa-chart-pie"></i> Tableau de bord
+        </button>
+        <button
+          [class.active]="view === 'add'"
+          (click)="showAdd()"
+        >
+          <i class="fas fa-plus-circle"></i> Ajouter un livre
+        </button>
+      </nav>
+
+      <div class="sb-foot">
+        <div class="sb-stats">
+          <div>
+            <span>{{ books.length }}</span>
+            <small>Total</small>
+          </div>
+          <div>
+            <span>{{ avail }}</span>
+            <small>Disponibles</small>
+          </div>
+        </div>
+        <button class="sb-logout" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i> Déconnexion
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="adm-main">
+
+      <!-- Topbar -->
+      <div class="adm-topbar">
+        <span>
+          <i
+            class="fas"
+            [class.fa-chart-pie]="view === 'dash'"
+            [class.fa-plus]="view === 'add'"
+            [class.fa-edit]="view === 'edit'"
+          ></i>
+          {{ view === 'dash' ? 'Tableau de bord' : view === 'add' ? 'Nouveau livre' : 'Modifier' }}
+        </span>
+        <button (click)="goSite()">
+          <i class="fas fa-external-link-alt"></i> Voir le site
+        </button>
+      </div>
+
+      <!-- Message succès -->
+      <div class="ok-msg" *ngIf="okMsg">
+        <i class="fas fa-check-circle"></i> {{ okMsg }}
+      </div>
+
+      <!-- ══════ DASHBOARD ══════ -->
+      <div class="dash" *ngIf="view === 'dash'">
+
+        <!-- Stats -->
+        <div class="d-cards">
+          <div class="d-card">
+            <div class="dc-i" style="background:rgba(45,58,140,.12);color:#2D3A8C">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div>
+              <span>{{ books.length }}</span>
+              <small>Livres total</small>
+            </div>
+          </div>
+          <div class="d-card">
+            <div class="dc-i" style="background:rgba(37,211,102,.12);color:#25D366">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div>
+              <span>{{ avail }}</span>
+              <small>Disponibles</small>
+            </div>
+          </div>
+          <div class="d-card">
+            <div class="dc-i" style="background:rgba(201,168,76,.15);color:#C9A84C">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div>
+              <span>{{ books.length - avail }}</span>
+              <small>Indisponibles</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table livres -->
+        <div class="d-table-wrap">
+          <div class="dt-head">
+            <h2>Gestion des livres</h2>
+            <button (click)="showAdd()">
+              <i class="fas fa-plus"></i> Ajouter
+            </button>
+          </div>
+
+          <div class="no-books" *ngIf="books.length === 0">
+            <i class="fas fa-book-open"></i>
+            <p>Aucun livre. Cliquez sur Ajouter.</p>
+          </div>
+
+          <div class="tbl-wrap" *ngIf="books.length > 0">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cover</th>
+                  <th>Titre</th>
+                  <th>Cat.</th>
+                  <th>Prix</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let b of books">
+                  <td>
+                    <img
+                      *ngIf="b.cover"
+                      [src]="b.cover"
+                      [alt]="b.title"
+                      class="t-img"
+                    >
+                    <div class="t-ph" *ngIf="!b.cover">
+                      {{ b.title.charAt(0) }}
+                    </div>
+                  </td>
+                  <td>
+                    <strong>{{ b.title }}</strong><br>
+                    <small>{{ b.description | slice:0:50 }}...</small>
+                  </td>
+                  <td><span class="tag">{{ b.category }}</span></td>
+                  <td class="t-price">{{ b.price | number:'1.0-0' }}</td>
+                  <td>
+                    <button
+                      class="status-btn"
+                      [class.on]="b.available"
+                      [class.off]="!b.available"
+                      (click)="toggle(b)"
+                    >
+                      <i
+                        class="fas"
+                        [class.fa-check-circle]="b.available"
+                        [class.fa-clock]="!b.available"
+                      ></i>
+                      {{ b.available ? 'Dispo' : 'Indispo' }}
+                    </button>
+                  </td>
+                  <td class="t-acts">
+                    <button class="act edit" (click)="showEdit(b)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="act del" (click)="confirmDel(b.id)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modal suppression -->
+        <div class="modal-ov" *ngIf="delId !== null">
+          <div class="mod-card">
+            <div class="mod-icon"><i class="fas fa-trash"></i></div>
+            <h3>Supprimer ce livre ?</h3>
+            <p>Cette action est irréversible.</p>
+            <div class="mod-btns">
+              <button (click)="cancelDel()">Annuler</button>
+              <button class="mod-del" (click)="del(delId!)">Supprimer</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════ FORMULAIRE AJOUT / ÉDITION ══════ -->
+      <div class="form-page" *ngIf="view === 'add' || view === 'edit'">
+        <div class="f-card">
+          <div class="f-card-head">
+            <h2>{{ view === 'add' ? 'Ajouter un livre' : 'Modifier le livre' }}</h2>
+            <button (click)="showDash()">
+              <i class="fas fa-arrow-left"></i> Retour
+            </button>
+          </div>
+
+          <form (ngSubmit)="submit()" class="book-form">
+            <div class="bf-grid">
+
+              <!-- Upload couverture -->
+              <div class="bf-cover">
+                <label>Couverture</label>
+                <div class="upload-zone" [class.has]="form.preview">
+                  <img
+                    *ngIf="form.preview"
+                    [src]="form.preview"
+                    alt="aperçu"
+                    class="up-preview"
+                  >
+                  <div class="up-ph" *ngIf="!form.preview">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Uploader une image</span>
+                    <small>JPG, PNG</small>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    (change)="onFile($event)"
+                    class="file-inp"
+                  >
+                </div>
+                <button
+                  type="button"
+                  class="rm-img"
+                  *ngIf="form.preview"
+                  (click)="form.cover = ''; form.preview = ''"
+                >
+                  <i class="fas fa-times"></i> Retirer
+                </button>
+              </div>
+
+              <!-- Champs texte -->
+              <div class="bf-fields">
+
+                <div class="bf-g">
+                  <label>Titre *</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="form.title"
+                    name="title"
+                    placeholder="Titre du livre"
+                    required
+                  >
+                </div>
+
+                <div class="bf-row">
+                  <div class="bf-g">
+                    <label>Prix (FCFA) *</label>
+                    <input
+                      type="number"
+                      [(ngModel)]="form.price"
+                      name="price"
+                      placeholder="5000"
+                      min="0"
+                      required
+                    >
+                  </div>
+                  <div class="bf-g">
+                    <label>Année</label>
+                    <input
+                      type="number"
+                      [(ngModel)]="form.year"
+                      name="year"
+                      placeholder="2024"
+                    >
+                  </div>
+                </div>
+
+                <div class="bf-g">
+                  <label>Catégorie</label>
+                  <select [(ngModel)]="form.category" name="cat">
+                    <option *ngFor="let c of cats" [value]="c">{{ c }}</option>
+                  </select>
+                </div>
+
+                <div class="bf-g">
+                  <label>Description *</label>
+                  <textarea
+                    [(ngModel)]="form.description"
+                    name="desc"
+                    rows="5"
+                    placeholder="Description du livre..."
+                    required
+                  ></textarea>
+                </div>
+
+                <!-- Toggle disponibilité -->
+                <div class="bf-toggle" (click)="form.available = !form.available">
+                  <div class="tgl" [class.on]="form.available">
+                    <div class="tgl-t"></div>
+                  </div>
+                  <span>
+                    {{ form.available ? 'Disponible à la commande' : 'Indisponible' }}
+                  </span>
+                
