@@ -12,62 +12,50 @@
         <strong>Gestion complète des livres</strong>
       </div>
 
-      <button class="btn-secondary" (click)="logout()">
+      <button class="btn-secondary" (click)="logout()" *ngIf="auth">
         <i class="fas fa-sign-out-alt"></i>
         Déconnexion
       </button>
     </div>
   </header>
 
-  <!-- LOGIN -->
   <div *ngIf="!auth" class="admin-login">
-
     <div class="login-card">
       <h2>Administration</h2>
-
       <input
         type="password"
         [(ngModel)]="code"
         placeholder="Code d'accès"
+        (keyup.enter)="login()"
       >
-
       <div class="login-buttons">
         <button class="btn-primary" (click)="login()">
           Connexion
         </button>
-
         <button class="btn-secondary" (click)="goHome()">
           Retour
         </button>
       </div>
     </div>
-
   </div>
 
-  <!-- DASHBOARD -->
   <div *ngIf="auth" class="admin-dashboard">
 
-    <!-- STAT CARDS -->
     <div class="d-cards">
-
       <div class="d-card">
         <h3>{{ books.length }}</h3>
         <p>Total des livres</p>
       </div>
-
       <div class="d-card">
         <h3>{{ books.filter(b => b.available).length }}</h3>
         <p>Disponibles</p>
       </div>
-
       <div class="d-card">
         <h3>{{ books.filter(b => !b.available).length }}</h3>
         <p>Indisponibles</p>
       </div>
-
     </div>
 
-    <!-- FORMULAIRE -->
     <div class="admin-form">
       <div class="admin-form-header">
         <div>
@@ -91,7 +79,6 @@
           [(ngModel)]="form.title"
           placeholder="Titre du livre"
         >
-
         <input
           type="number"
           [(ngModel)]="form.price"
@@ -100,11 +87,9 @@
       </div>
 
       <div class="form-grid">
-        <input
-          type="text"
-          [(ngModel)]="form.category"
-          placeholder="Catégorie"
-        >
+        <select [(ngModel)]="form.category">
+          <option *ngFor="let cat of cats" [value]="cat">{{ cat }}</option>
+        </select>
 
         <label class="file-input-group">
           <span>Couverture</span>
@@ -143,7 +128,6 @@
       </button>
     </div>
 
-    <!-- TABLE LISTE -->
     <div class="tbl-wrap">
       <table>
         <thead>
@@ -155,7 +139,6 @@
             <th>Actions</th>
           </tr>
         </thead>
-
         <tbody>
           <tr *ngFor="let book of books">
             <td class="cover-cell">

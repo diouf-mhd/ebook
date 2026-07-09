@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { BookService, Book } from './book.service';
 
 @Component({
@@ -10,126 +11,157 @@ import { BookService, Book } from './book.service';
   imports: [CommonModule, FormsModule],
   templateUrl: './admin.html'
 })
-export class AdminComponent {
+export class AdminComponent implements OnInit, OnDestroy {
 
+  /* ── AUTHENTIFICATION ── */
   auth = false;
   code = '';
   readonly ACCESS_CODE = '2027';
 
+  /* ── DONNÉES LIVRES ── */
   books: Book[] = [];
-  editMode = false;
-  editId: number | null = null;
+  private bookSub!: Subscription;
 
-  form = {
-    title: '',
-    description: '',
-    price: 0,
-    category: '',
-    available: true,
-    cover: ''
-  };
+  /* ── MODE ÉDITION & FORMULAIRE ── */
+  editMode = false;
+  currentBookId: number | null = null;
+  form = this.initForm();
+
+  cats = [
+    'Roman', 'Essai', 'Poésie',
+    'Conte', 'Nouvelles', 'Biographie', 'Autre'
+  ];
 
   constructor(
     private bookService: BookService,
     private router: Router
-  ) {
-    this.bookService.books$.subscribe(b => this.books = b);
+  ) {}
+
+  ngOnInit(): void {
+    if (sessionStorage.getItem('og_admin') === '1') {
+      this.auth = true;
+    }
+
+    this.bookSub = this.bookService.books$.subscribe(b => {
+      this.books = b;
+    });
   }
 
-  login() {
-    if (this.code === this.ACCESS_CODE) {
-      this.auth = true;
-      this.code = '';
-    } else {
-      alert('Code incorrect');
+  ngOnDestroy(): void {
+    if (this.bookSub) {
+      this.bookSub.unsubscribe();
     }
   }
 
-  logout() {
-    this.auth = false;
-    this.resetForm();
+  /* ── AUTH ── */
+  login(): void {
+    if (this.code === this.ACCESS_CODE) {
+      this.auth = true;
+      sessionStorage.setItem('og_admin', '1');
+      this.code = '';
+    } else {
+      alert('Code d’accès incorrect !');
+      this.code = '';
+    }
   }
 
-  goHome() {
+  logout(): void {
+    this.auth = false;
+    this.code = '';
+    sessionStorage.removeItem('og_admin');
+  }
+
+  goHome(): void {
     this.router.navigate(['/']);
   }
 
-  onCoverUpload(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.form.cover = reader.result as string;
+  /* ── ACTIONS LIVRE ── */
+  private initForm() {
+    return {
+      title: '',
+      description: '',
+      price: null as number | null,
+      category: 'Roman',
+      available: true,
+      cover: ''
     };
-    reader.readAsDataURL(file);
   }
 
-  saveBook() {
-    if (!this.form.title || !this.form.price) {
-      alert('Le titre et le prix sont requis.');
+  saveBook(): void {
+    if (!this.form.title.trim() || this.form.price === null || this.form.price <= 0) {
+      alert('Veuillez remplir correctement les champs obligatoires (Titre et Prix valide).');
       return;
     }
 
-    const data = {
-      title: this.form.title,
-      description: this.form.description,
-      price: Number(this.form.price),
-      category: this.form.category || 'Autre',
+    const bookData = {
+      title: this.form.title.trim(),
+      description: this.form.description.trim(),
+      price: this.form.price,
+      category: this.form.category,
       available: this.form.available,
-      cover: this.form.cover || ''
+      cover: this.form.cover
     };
 
-    if (this.editMode && this.editId !== null) {
-      this.bookService.update(this.editId, data);
-      this.editMode = false;
-      this.editId = null;
+    if (this.editMode && this.currentBookId !== null) {
+      // Mode Modification
+      this.bookService.update(this.currentBookId, bookData);
+      alert('Livre mis à jour avec succès !');
     } else {
-      this.bookService.add(data);
+      // Mode Ajout
+      this.bookService.add(bookData);
+      alert('Livre ajouté avec succès !');
     }
 
-    this.resetForm();
+    this.cancelEdit();
   }
 
-  editBook(book: Book) {
+  editBook(book: Book): void {
     this.editMode = true;
-    this.editId = book.id;
+    this.currentBookId = book.id;
     this.form = {
       title: book.title,
-      description: book.description,
+      description: book.description || '',
       price: book.price,
       category: book.category,
       available: book.available,
-      cover: book.cover
+      cover: book.cover || ''
     };
   }
 
-  cancelEdit() {
+  cancelEdit(): void {
     this.editMode = false;
-    this.editId = null;
-    this.resetForm();
+    this.currentBookId = null;
+    this.form = this.initForm();
   }
 
-  deleteBook(id: number) {
-    this.bookService.delete(id);
+  deleteBook(id: number): void {
+    if (confirm('Voulez-vous vraiment supprimer ce livre ?')) {
+      this.bookService.delete(id);
+      if (this.currentBookId === id) {
+        this.cancelEdit();
+      }
+    }
   }
 
-  toggleAvailability(book: Book) {
+  toggleAvailability(book: Book): void {
     this.bookService.update(book.id, {
       available: !book.available
     });
   }
 
-  private resetForm() {
-    this.form = {
-      title: '',
-      description: '',
-      price: 0,
-      category: '',
-      available: true,
-      cover: ''
-    };
+  /* ── GESTION DE LA COUVERTURE ── */
+  onCoverUpload(event: Event): void {
+    const element = event.target as HTMLInputElement;
+    const fileList: FileList | null = element.files;
+    
+    if (fileList && fileList.length > 0) {
+      const file = fileList[0];
+      const reader = new FileReader();
+      
+      reader.onload = () => {
+        this.form.cover = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 }
