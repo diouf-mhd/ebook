@@ -1,339 +1,218 @@
-<div class="adm">
+<div class="admin-wrapper">
 
-  <!-- ════════ LOGIN ════════ -->
-  <div class="login-page" *ngIf="!auth">
-    <div class="lp-orb a"></div>
-    <div class="lp-orb b"></div>
+  <header class="admin-nav">
+    <div class="container admin-nav-inner">
+      <button class="btn-secondary" (click)="goHome()">
+        <i class="fas fa-home"></i>
+        Retour à l'accueil
+      </button>
 
-    <div class="lp-card">
-      <div class="lp-icon"><i class="fas fa-lock"></i></div>
-      <h1>Administration</h1>
-      <p>Ousseynou Gningue – Site Officiel</p>
+      <div class="admin-title">
+        <span>Tableau de bord admin</span>
+        <strong>Gestion complète des livres</strong>
+      </div>
 
-      <div class="lp-form">
-        <label>Code d'accès</label>
-        <input
-          type="password"
-          [(ngModel)]="code"
-          name="code"
-          (keyup.enter)="login()"
-          [class.err]="errMsg"
-          [disabled]="locked"
-          placeholder="••••"
-          maxlength="10"
-          autofocus
-        >
-        <div class="lp-err" *ngIf="errMsg">
-          <i class="fas fa-exclamation-circle"></i> {{ errMsg }}
-        </div>
-        <button class="lp-btn" (click)="login()" [disabled]="locked || !code">
-          <i class="fas fa-unlock-alt"></i> Accéder
+      <button class="btn-secondary" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <!-- LOGIN -->
+  <div *ngIf="!auth" class="admin-login">
+
+    <div class="login-card">
+      <h2>Administration</h2>
+
+      <input
+        type="password"
+        [(ngModel)]="code"
+        placeholder="Code d'accès"
+      >
+
+      <div class="login-buttons">
+        <button class="btn-primary" (click)="login()">
+          Connexion
         </button>
-        <button class="lp-back" (click)="goSite()">
-          <i class="fas fa-arrow-left"></i> Retour au site
+
+        <button class="btn-secondary" (click)="goHome()">
+          Retour
         </button>
       </div>
     </div>
+
   </div>
 
-  <!-- ════════ LAYOUT ADMIN ════════ -->
-  <div class="adm-layout" *ngIf="auth">
+  <!-- DASHBOARD -->
+  <div *ngIf="auth" class="admin-dashboard">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sb-head">
-        <div class="sb-logo"><i class="fas fa-feather-alt"></i></div>
+    <!-- STAT CARDS -->
+    <div class="d-cards">
+
+      <div class="d-card">
+        <h3>{{ books.length }}</h3>
+        <p>Total des livres</p>
+      </div>
+
+      <div class="d-card">
+        <h3>{{ books.filter(b => b.available).length }}</h3>
+        <p>Disponibles</p>
+      </div>
+
+      <div class="d-card">
+        <h3>{{ books.filter(b => !b.available).length }}</h3>
+        <p>Indisponibles</p>
+      </div>
+
+    </div>
+
+    <!-- FORMULAIRE -->
+    <div class="admin-form">
+      <div class="admin-form-header">
         <div>
-          <strong>O. Gningue</strong>
-          <span>Admin</span>
+          <h3>{{ editMode ? 'Modifier un livre' : 'Ajouter un nouveau livre' }}</h3>
+          <p>Remplissez les informations pour gérer votre catalogue.</p>
+        </div>
+        <div class="form-actions">
+          <button
+            class="btn-secondary"
+            *ngIf="editMode"
+            (click)="cancelEdit()"
+          >
+            Annuler
+          </button>
         </div>
       </div>
 
-      <nav class="sb-nav">
-        <button
-          [class.active]="view === 'dash'"
-          (click)="showDash()"
+      <div class="form-grid">
+        <input
+          type="text"
+          [(ngModel)]="form.title"
+          placeholder="Titre du livre"
         >
-          <i class="fas fa-chart-pie"></i> Tableau de bord
-        </button>
-        <button
-          [class.active]="view === 'add'"
-          (click)="showAdd()"
+
+        <input
+          type="number"
+          [(ngModel)]="form.price"
+          placeholder="Prix (FCFA)"
         >
-          <i class="fas fa-plus-circle"></i> Ajouter un livre
-        </button>
-      </nav>
-
-      <div class="sb-foot">
-        <div class="sb-stats">
-          <div>
-            <span>{{ books.length }}</span>
-            <small>Total</small>
-          </div>
-          <div>
-            <span>{{ avail }}</span>
-            <small>Disponibles</small>
-          </div>
-        </div>
-        <button class="sb-logout" (click)="logout()">
-          <i class="fas fa-sign-out-alt"></i> Déconnexion
-        </button>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <main class="adm-main">
-
-      <!-- Topbar -->
-      <div class="adm-topbar">
-        <span>
-          <i
-            class="fas"
-            [class.fa-chart-pie]="view === 'dash'"
-            [class.fa-plus]="view === 'add'"
-            [class.fa-edit]="view === 'edit'"
-          ></i>
-          {{ view === 'dash' ? 'Tableau de bord' : view === 'add' ? 'Nouveau livre' : 'Modifier' }}
-        </span>
-        <button (click)="goSite()">
-          <i class="fas fa-external-link-alt"></i> Voir le site
-        </button>
       </div>
 
-      <!-- Message succès -->
-      <div class="ok-msg" *ngIf="okMsg">
-        <i class="fas fa-check-circle"></i> {{ okMsg }}
+      <div class="form-grid">
+        <input
+          type="text"
+          [(ngModel)]="form.category"
+          placeholder="Catégorie"
+        >
+
+        <label class="file-input-group">
+          <span>Couverture</span>
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onCoverUpload($event)"
+          >
+        </label>
       </div>
 
-      <!-- ══════ DASHBOARD ══════ -->
-      <div class="dash" *ngIf="view === 'dash'">
+      <textarea
+        [(ngModel)]="form.description"
+        placeholder="Description"
+        rows="4"
+      ></textarea>
 
-        <!-- Stats -->
-        <div class="d-cards">
-          <div class="d-card">
-            <div class="dc-i" style="background:rgba(45,58,140,.12);color:#2D3A8C">
-              <i class="fas fa-book-open"></i>
-            </div>
-            <div>
-              <span>{{ books.length }}</span>
-              <small>Livres total</small>
-            </div>
-          </div>
-          <div class="d-card">
-            <div class="dc-i" style="background:rgba(37,211,102,.12);color:#25D366">
-              <i class="fas fa-check-circle"></i>
-            </div>
-            <div>
-              <span>{{ avail }}</span>
-              <small>Disponibles</small>
-            </div>
-          </div>
-          <div class="d-card">
-            <div class="dc-i" style="background:rgba(201,168,76,.15);color:#C9A84C">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div>
-              <span>{{ books.length - avail }}</span>
-              <small>Indisponibles</small>
-            </div>
-          </div>
-        </div>
-
-        <!-- Table livres -->
-        <div class="d-table-wrap">
-          <div class="dt-head">
-            <h2>Gestion des livres</h2>
-            <button (click)="showAdd()">
-              <i class="fas fa-plus"></i> Ajouter
-            </button>
-          </div>
-
-          <div class="no-books" *ngIf="books.length === 0">
-            <i class="fas fa-book-open"></i>
-            <p>Aucun livre. Cliquez sur Ajouter.</p>
-          </div>
-
-          <div class="tbl-wrap" *ngIf="books.length > 0">
-            <table>
-              <thead>
-                <tr>
-                  <th>Cover</th>
-                  <th>Titre</th>
-                  <th>Cat.</th>
-                  <th>Prix</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let b of books">
-                  <td>
-                    <img
-                      *ngIf="b.cover"
-                      [src]="b.cover"
-                      [alt]="b.title"
-                      class="t-img"
-                    >
-                    <div class="t-ph" *ngIf="!b.cover">
-                      {{ b.title.charAt(0) }}
-                    </div>
-                  </td>
-                  <td>
-                    <strong>{{ b.title }}</strong><br>
-                    <small>{{ b.description | slice:0:50 }}...</small>
-                  </td>
-                  <td><span class="tag">{{ b.category }}</span></td>
-                  <td class="t-price">{{ b.price | number:'1.0-0' }}</td>
-                  <td>
-                    <button
-                      class="status-btn"
-                      [class.on]="b.available"
-                      [class.off]="!b.available"
-                      (click)="toggle(b)"
-                    >
-                      <i
-                        class="fas"
-                        [class.fa-check-circle]="b.available"
-                        [class.fa-clock]="!b.available"
-                      ></i>
-                      {{ b.available ? 'Dispo' : 'Indispo' }}
-                    </button>
-                  </td>
-                  <td class="t-acts">
-                    <button class="act edit" (click)="showEdit(b)">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="act del" (click)="confirmDel(b.id)">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Modal suppression -->
-        <div class="modal-ov" *ngIf="delId !== null">
-          <div class="mod-card">
-            <div class="mod-icon"><i class="fas fa-trash"></i></div>
-            <h3>Supprimer ce livre ?</h3>
-            <p>Cette action est irréversible.</p>
-            <div class="mod-btns">
-              <button (click)="cancelDel()">Annuler</button>
-              <button class="mod-del" (click)="del(delId!)">Supprimer</button>
-            </div>
-          </div>
-        </div>
-
+      <div class="toggle-row">
+        <label>
+          <input
+            type="checkbox"
+            [(ngModel)]="form.available"
+            name="available"
+          >
+          Disponible
+        </label>
       </div>
 
-      <!-- ══════ FORMULAIRE AJOUT / ÉDITION ══════ -->
-      <div class="form-page" *ngIf="view === 'add' || view === 'edit'">
-        <div class="f-card">
-          <div class="f-card-head">
-            <h2>{{ view === 'add' ? 'Ajouter un livre' : 'Modifier le livre' }}</h2>
-            <button (click)="showDash()">
-              <i class="fas fa-arrow-left"></i> Retour
-            </button>
-          </div>
+      <div *ngIf="form.cover" class="cover-preview">
+        <img [src]="form.cover" alt="Aperçu couverture">
+        <small>Aperçu de la couverture</small>
+      </div>
 
-          <form (ngSubmit)="submit()" class="book-form">
-            <div class="bf-grid">
+      <button class="btn-primary" (click)="saveBook()">
+        {{ editMode ? 'Mettre à jour le livre' : 'Ajouter le livre' }}
+      </button>
+    </div>
 
-              <!-- Upload couverture -->
-              <div class="bf-cover">
-                <label>Couverture</label>
-                <div class="upload-zone" [class.has]="form.preview">
-                  <img
-                    *ngIf="form.preview"
-                    [src]="form.preview"
-                    alt="aperçu"
-                    class="up-preview"
-                  >
-                  <div class="up-ph" *ngIf="!form.preview">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>Uploader une image</span>
-                    <small>JPG, PNG</small>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    (change)="onFile($event)"
-                    class="file-inp"
-                  >
-                </div>
-                <button
-                  type="button"
-                  class="rm-img"
-                  *ngIf="form.preview"
-                  (click)="form.cover = ''; form.preview = ''"
-                >
-                  <i class="fas fa-times"></i> Retirer
-                </button>
-              </div>
+    <!-- TABLE LISTE -->
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Couverture</th>
+            <th>Titre</th>
+            <th>Prix</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-              <!-- Champs texte -->
-              <div class="bf-fields">
+        <tbody>
+          <tr *ngFor="let book of books">
+            <td class="cover-cell">
+              <img
+                *ngIf="book.cover"
+                [src]="book.cover"
+                [alt]="book.title"
+              >
+              <span *ngIf="!book.cover">Aucune</span>
+            </td>
+            <td>
+              <strong>{{ book.title }}</strong><br>
+              <small>{{ book.category }}</small>
+            </td>
+            <td>{{ book.price }} FCFA</td>
+            <td>
+              <button
+                class="status-btn"
+                [class.on]="book.available"
+                [class.off]="!book.available"
+                (click)="toggleAvailability(book)"
+              >
+                {{ book.available ? 'Disponible' : 'Indisponible' }}
+              </button>
+            </td>
+            <td class="actions-cell">
+              <button class="act edit" (click)="editBook(book)">
+                Modifier
+              </button>
+              <button class="act del" (click)="deleteBook(book.id)">
+                Supprimer
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-                <div class="bf-g">
-                  <label>Titre *</label>
-                  <input
-                    type="text"
-                    [(ngModel)]="form.title"
-                    name="title"
-                    placeholder="Titre du livre"
-                    required
-                  >
-                </div>
-
-                <div class="bf-row">
-                  <div class="bf-g">
-                    <label>Prix (FCFA) *</label>
-                    <input
-                      type="number"
-                      [(ngModel)]="form.price"
-                      name="price"
-                      placeholder="5000"
-                      min="0"
-                      required
-                    >
-                  </div>
-                  <div class="bf-g">
-                    <label>Année</label>
-                    <input
-                      type="number"
-                      [(ngModel)]="form.year"
-                      name="year"
-                      placeholder="2024"
-                    >
-                  </div>
-                </div>
-
-                <div class="bf-g">
-                  <label>Catégorie</label>
-                  <select [(ngModel)]="form.category" name="cat">
-                    <option *ngFor="let c of cats" [value]="c">{{ c }}</option>
-                  </select>
-                </div>
-
-                <div class="bf-g">
-                  <label>Description *</label>
-                  <textarea
-                    [(ngModel)]="form.description"
-                    name="desc"
-                    rows="5"
-                    placeholder="Description du livre..."
-                    required
-                  ></textarea>
-                </div>
-
-                <!-- Toggle disponibilité -->
-                <div class="bf-toggle" (click)="form.available = !form.available">
-                  <div class="tgl" [class.on]="form.available">
-                    <div class="tgl-t"></div>
-                  </div>
-                  <span>
-                    {{ form.available ? 'Disponible à la commande' : 'Indisponible' }}
-                  </span>
-                
+    <footer class="admin-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>Administration</strong>
+          <p>Gestion des livres et des contenus du site.</p>
+        </div>
+        <div>
+          <span>Contact</span>
+          <a href="https://wa.me/221771308536" target="_blank">
+            WhatsApp +221 77 130 85 36
+          </a>
+        </div>
+        <div>
+          <span>Retour</span>
+          <button class="btn-secondary" (click)="goHome()">
+            Accueil
+          </button>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

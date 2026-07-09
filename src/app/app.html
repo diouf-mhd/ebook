@@ -1,520 +1,134 @@
-<!-- ════════════ NAVBAR ════════════ -->
-<header class="navbar" [class.scrolled]="scrolled">
-  <div class="nav-inner">
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="container nav-inner">
 
     <div class="nav-logo" (click)="scrollTo('hero')">
-      <span class="logo-icon"><i class="fas fa-feather-alt"></i></span>
-      <div>
-        <span class="logo-name">Ousseynou Gningue</span>
-        <span class="logo-sub">Écrivain</span>
+      <div class="logo-icon">
+        <i class="fas fa-feather-alt"></i>
       </div>
+      <strong>Ousseynou Gningue</strong>
     </div>
 
     <nav class="nav-links">
-      <a
-        *ngFor="let l of navLinks"
-        class="nl"
-        [class.active]="activeSection === l.id"
-        (click)="scrollTo(l.id)"
-      >{{ l.label }}</a>
+      <a class="nl" (click)="scrollTo('hero')">Accueil</a>
+      <a class="nl" (click)="scrollTo('about')">À propos</a>
+      <a class="nl" (click)="scrollTo('books')">Livres</a>
+      <a class="nl" (click)="scrollTo('contact')">Contact</a>
+
+      <!-- ✅ ADMIN BUTTON -->
+      <button class="nav-admin-btn" (click)="goAdmin()">
+        Admin
+      </button>
     </nav>
 
-    <div class="nav-right">
-      <a href="https://wa.me/221771308536" target="_blank" class="nav-wa">
-        <i class="fab fa-whatsapp"></i> Commander
-      </a>
-      <button class="nav-admin-btn" (click)="goAdmin()" title="Admin">
-        <i class="fas fa-lock"></i>
-      </button>
-      <button
-        class="burger"
-        [class.open]="menuOpen"
-        (click)="menuOpen = !menuOpen"
-      >
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Menu mobile -->
-  <div class="mobile-nav" [class.open]="menuOpen">
-    <a
-      *ngFor="let l of navLinks"
-      (click)="scrollTo(l.id)"
-      class="mn-link"
-    >{{ l.label }}</a>
-    <a
-      href="https://wa.me/221771308536"
-      target="_blank"
-      class="mn-wa"
-    ><i class="fab fa-whatsapp"></i> Commander</a>
   </div>
 </header>
 
-<!-- ════════════ HERO ════════════ -->
-<section id="hero" class="hero">
-  <div class="hero-orb o1"></div>
-  <div class="hero-orb o2"></div>
 
-  <div class="hero-inner">
+<!-- HERO -->
+<section id="hero" class="hero fade-slide">
+  <div class="hero-bg"></div>
 
-    <!-- Texte -->
-    <div class="hero-text">
-      <span class="hero-badge fi">
-        <i class="fas fa-star"></i> Écrivain Sénégalais
-      </span>
-      <h1 class="fi fd1">
-        <em>Les mots de</em>
-        <strong>Ousseynou<br>Gningue</strong>
-      </h1>
-      <p class="hero-desc fi fd2">
-        Plongez dans un univers littéraire riche et authentique.
-        Des œuvres qui touchent l'âme et racontent l'Afrique.
-      </p>
-      <div class="hero-stats fi fd3">
-        <div class="hs">
-          <span class="hs-n">+10</span>
-          <span class="hs-l">Œuvres</span>
-        </div>
-        <div class="hs-div"></div>
-        <div class="hs">
-          <span class="hs-n">+500</span>
-          <span class="hs-l">Lecteurs</span>
-        </div>
-        <div class="hs-div"></div>
-        <div class="hs">
-          <span class="hs-n">20+</span>
-          <span class="hs-l">Ans</span>
-        </div>
-      </div>
-      <div class="hero-btns fi fd4">
-        <button class="btn-primary" (click)="scrollTo('books')">
-          <i class="fas fa-book-open"></i> Voir les livres
-        </button>
-        <button class="btn-outline" (click)="scrollTo('about')">
-          <i class="fas fa-user-pen"></i> L'auteur
-        </button>
-      </div>
-    </div>
+  <div class="container hero-content">
+    <h1 class="hero-title">
+      <span class="small-text">Les mots de</span><br>
+      <span class="big-text">Ousseynou Gningue</span>
+    </h1>
 
-    <!-- Visuel livre -->
-    <div class="hero-visual fi fd2">
-      <div class="book-float">
-        <div class="bk-main">
-          <div class="bk-cover">
-            <i class="fas fa-book-open"></i>
-            <span>Couverture</span>
-          </div>
-          <div class="bk-spine"></div>
-        </div>
-        <div class="bk-shadow"></div>
-        <div class="bk-badge top">
-          <i class="fas fa-pen-nib"></i> Nouveau
-        </div>
-        <div class="bk-badge bot">
-          <i class="fas fa-star"></i> Top vente
-        </div>
-      </div>
-    </div>
+    <p class="hero-desc">
+      Écrivain passionné partageant des œuvres
+      inspirantes qui touchent l’âme.
+    </p>
 
-  </div>
-
-  <div class="scroll-cue" (click)="scrollTo('about')">
-    <div class="sc-line"></div>
-    <span>Découvrir</span>
+    <button class="btn-primary" (click)="scrollTo('books')">
+      Découvrir les livres
+    </button>
   </div>
 </section>
 
-<!-- ════════════ ABOUT ════════════ -->
-<section id="about" class="about">
+
+<!-- ABOUT -->
+<section id="about" class="fade-slide">
   <div class="container">
-    <div class="about-grid">
-
-      <!-- Photo -->
-      <div class="about-img fi">
-        <div class="author-photo">
-          <i class="fas fa-user-pen"></i>
-          <span>Photo de l'auteur</span>
-          <small>via Admin</small>
-        </div>
-        <div class="quote-card">
-          <i class="fas fa-quote-left"></i>
-          <p>"Les mots sont la lumière de l'âme."</p>
-          <cite>– O. Gningue</cite>
-        </div>
-      </div>
-
-      <!-- Contenu -->
-      <div class="about-content">
-        <span class="s-label fi">À propos</span>
-        <h2 class="s-title fi fd1">
-          L'homme derrière les <span>mots</span>
-        </h2>
-        <div class="s-div fi fd1"></div>
-
-        <p class="fi fd2">
-          Ousseynou Gningue est un écrivain sénégalais passionné,
-          dont la plume transcende les frontières pour toucher
-          l'universel à travers le prisme de l'Afrique.
-        </p>
-        <p class="fi fd3">
-          Nourri par la richesse culturelle du Sénégal, il explore
-          dans ses œuvres l'identité, la famille, la résilience et
-          l'espoir. Chaque livre est une invitation à la réflexion
-          et à la découverte.
-        </p>
-
-        <div class="qualities fi fd4">
-          <div class="q-card">
-            <i class="fas fa-pen-nib"></i>
-            <strong>Auteur prolifique</strong>
-            <span>+10 œuvres publiées</span>
-          </div>
-          <div class="q-card">
-            <i class="fas fa-globe-africa"></i>
-            <strong>Voix africaine</strong>
-            <span>Culture sénégalaise</span>
-          </div>
-          <div class="q-card">
-            <i class="fas fa-heart"></i>
-            <strong>Passion authentique</strong>
-            <span>L'écriture comme vocation</span>
-          </div>
-          <div class="q-card">
-            <i class="fas fa-users"></i>
-            <strong>Proche des lecteurs</strong>
-            <span>Communauté engagée</span>
-          </div>
-        </div>
-
-        <a
-          href="https://wa.me/221771308536"
-          target="_blank"
-          class="btn-wa fi fd4"
-        >
-          <i class="fab fa-whatsapp"></i> Contacter l'auteur
-        </a>
-      </div>
-
-    </div>
+    <h2>À propos</h2>
+    <p style="margin-top:20px;">
+      Ousseynou Gningue est un écrivain sénégalais
+      engagé dont les œuvres explorent l’identité,
+      la culture et l’espoir.
+    </p>
   </div>
 </section>
 
-<!-- ════════════ BOOKS ════════════ -->
-<section id="books" class="books">
+
+<!-- BOOKS -->
+<section id="books" class="fade-slide">
   <div class="container">
+    <h2>Mes Œuvres</h2>
 
-    <div class="section-head fi">
-      <span class="s-label">Bibliothèque</span>
-      <h2 class="s-title">Mes <span>Œuvres</span></h2>
-      <div class="s-div"></div>
-      <p>Découvrez l'univers littéraire d'Ousseynou Gningue.
-         Commandez directement via WhatsApp.</p>
-    </div>
-
-    <!-- Filtres catégories -->
-    <div class="cat-filters fi fd1" *ngIf="categories.length > 2">
-      <button
-        *ngFor="let c of categories"
-        class="cat-btn"
-        [class.active]="filterCat === c"
-        (click)="filterCat = c"
-      >{{ c }}</button>
-    </div>
-
-    <!-- Grille livres -->
     <div class="books-grid">
-      <div
-        class="book-card fi"
-        *ngFor="let b of filteredBooks"
-        [class.unavail]="!b.available"
-      >
-        <div class="bc-cover">
-          <img *ngIf="b.cover" [src]="b.cover" [alt]="b.title">
-          <div class="bc-placeholder" *ngIf="!b.cover">
-            <span class="bc-letter">{{ b.title.charAt(0) }}</span>
-            <i class="fas fa-book-open"></i>
-          </div>
-          <span class="bc-cat">{{ b.category }}</span>
-          <div
-            class="bc-hover"
-            *ngIf="b.available"
-            (click)="order(b)"
-          >
-            <i class="fab fa-whatsapp"></i> Commander
-          </div>
-          <div class="bc-unavail" *ngIf="!b.available">
-            <i class="fas fa-clock"></i> Bientôt dispo
-          </div>
-        </div>
+      <div class="book-card" *ngFor="let book of books">
+        <h3>{{ book.title }}</h3>
+        <p>{{ book.description }}</p>
+        <strong>{{ book.price }} FCFA</strong>
 
-        <div class="bc-body">
-          <h3>{{ b.title }}</h3>
-          <p>{{ b.description }}</p>
-          <div class="bc-footer">
-            <div class="bc-price">
-              <span class="price-n">{{ b.price | number:'1.0-0' }}</span>
-              <span class="price-c">FCFA</span>
-            </div>
-            <button
-              class="btn-order"
-              [class.off]="!b.available"
-              (click)="b.available && order(b)"
-            >
-              <i class="fab fa-whatsapp"></i>
-              {{ b.available ? 'Commander' : 'Indisponible' }}
-            </button>
-          </div>
+        <div style="margin-top:10px;">
+          <button
+            class="btn-order"
+            *ngIf="book.available"
+            (click)="order(book)">
+            Commander
+          </button>
+
+          <span *ngIf="!book.available" style="color:red;">
+            Indisponible
+          </span>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- CTA global -->
-    <div class="books-cta fi">
+
+<!-- CONTACT SIMPLE -->
+<section id="contact" class="fade-slide">
+  <div class="container" style="text-align:center;">
+    <h2>Contact</h2>
+    <p style="margin:20px 0;">
+      Pour toute commande ou information,
+      contactez directement via WhatsApp.
+    </p>
+
+    <a [href]="fabUrl"
+       target="_blank"
+       class="btn-primary">
       <i class="fab fa-whatsapp"></i>
-      <div>
-        <strong>Une commande spéciale ?</strong>
-        <span>Contactez l'auteur directement sur WhatsApp</span>
-      </div>
-      <a
-        href="https://wa.me/221771308536?text=Bonjour%2C%20je%20souhaite%20passer%20commande."
-        target="_blank"
-        class="btn-wa"
-      ><i class="fab fa-whatsapp"></i> Écrire</a>
-    </div>
-
+      WhatsApp
+    </a>
   </div>
 </section>
 
-<!-- ════════════ CONTACT ════════════ -->
-<section id="contact" class="contact">
+
+<!-- FOOTER -->
+<footer class="footer fade-slide">
   <div class="container">
+    <h3>Ousseynou Gningue</h3>
+    <p>Dakar, Sénégal</p>
 
-    <div class="section-head fi">
-      <span class="s-label">Contact</span>
-      <h2 class="s-title">Parlons <span>ensemble</span></h2>
-      <div class="s-div"></div>
-    </div>
-
-    <div class="contact-grid">
-
-      <!-- Infos -->
-      <div class="contact-info fi">
-        <p>Commande, invitation ou simple échange —
-           n'hésitez pas à prendre contact.</p>
-
-        <div class="c-cards">
-          <a
-            href="https://wa.me/221771308536"
-            target="_blank"
-            class="c-card"
-          >
-            <div class="cc-icon" style="background:rgba(37,211,102,.15);color:#25D366">
-              <i class="fab fa-whatsapp"></i>
-            </div>
-            <div>
-              <span>WhatsApp</span>
-              <strong>+221 77 130 85 36</strong>
-            </div>
-          </a>
-
-          <div class="c-card">
-            <div class="cc-icon" style="background:rgba(45,58,140,.1);color:#2D3A8C">
-              <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <div>
-              <span>Localisation</span>
-              <strong>Dakar, Sénégal</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="socials">
-          <a href="#" class="soc"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" class="soc"><i class="fab fa-instagram"></i></a>
-          <a
-            href="https://wa.me/221771308536"
-            target="_blank"
-            class="soc wa"
-          ><i class="fab fa-whatsapp"></i></a>
-        </div>
-      </div>
-
-      <!-- Formulaire -->
-      <form class="contact-form fi fd2" (ngSubmit)="sendMsg()">
-        <h3>Envoyer un message</h3>
-        <p class="cf-sub">Réponse rapide via WhatsApp</p>
-
-        <div class="cf-group">
-          <label><i class="fas fa-user"></i> Votre nom</label>
-          <input
-            type="text"
-            [(ngModel)]="form.name"
-            name="name"
-            placeholder="Votre nom complet"
-            required
-          >
-        </div>
-
-        <div class="cf-group">
-          <label><i class="fas fa-phone"></i> Téléphone</label>
-          <input
-            type="tel"
-            [(ngModel)]="form.phone"
-            name="phone"
-            placeholder="+221 XX XXX XX XX"
-          >
-        </div>
-
-        <div class="cf-group">
-          <label><i class="fas fa-comment-dots"></i> Message</label>
-          <textarea
-            [(ngModel)]="form.message"
-            name="message"
-            rows="4"
-            placeholder="Votre message..."
-            required
-          ></textarea>
-        </div>
-
-        <button
-          type="submit"
-          class="btn-wa w100"
-          [disabled]="!form.name || !form.message"
-        >
-          <i class="fab fa-whatsapp"></i> Envoyer via WhatsApp
-        </button>
-      </form>
-
-    </div>
-  </div>
-</section>
-
-<!-- ════════════ FOOTER ════════════ -->
-<footer class="footer">
-  <svg class="footer-wave" viewBox="0 0 1440 80" preserveAspectRatio="none">
-    <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#1A2460"/>
-  </svg>
-
-  <div class="footer-main">
-    <div class="container">
-      <div class="footer-grid">
-
-        <!-- Auteur -->
-        <div class="fg-col">
-          <div class="f-logo">
-            <span class="f-logo-icon">
-              <i class="fas fa-feather-alt"></i>
-            </span>
-            <div>
-              <strong>Ousseynou Gningue</strong>
-              <span>Écrivain Passionné</span>
-            </div>
-          </div>
-          <p class="f-desc">
-            Des mots qui traversent les âges, des histoires
-            qui illuminent les âmes.
-          </p>
-          <div class="f-socials">
-            <a href="#" class="fs"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="fs"><i class="fab fa-instagram"></i></a>
-            <a
-              href="https://wa.me/221771308536"
-              target="_blank"
-              class="fs wa"
-            ><i class="fab fa-whatsapp"></i></a>
-          </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="fg-col">
-          <h4 class="f-col-title">Navigation</h4>
-          <ul class="f-links">
-            <li *ngFor="let l of navLinks">
-              <a (click)="scrollTo(l.id)">
-                <i class="fas fa-chevron-right"></i> {{ l.label }}
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Contact -->
-        <div class="fg-col">
-          <h4 class="f-col-title">Contact</h4>
-          <ul class="f-contact">
-            <li>
-              <i class="fab fa-whatsapp" style="color:#25D366"></i>
-              <a href="https://wa.me/221771308536" target="_blank">
-                +221 77 130 85 36
-              </a>
-            </li>
-            <li>
-              <i class="fas fa-map-marker-alt" style="color:#C9A84C"></i>
-              <span>Dakar, Sénégal</span>
-            </li>
-          </ul>
-          <a
-            href="https://wa.me/221771308536?text=Bonjour%2C%20commande%20svp."
-            target="_blank"
-            class="btn-wa sm"
-          ><i class="fab fa-whatsapp"></i> Commander</a>
-        </div>
-
-        <!-- Développeur -->
-        <div class="fg-col">
-          <h4 class="f-col-title">Développeur</h4>
-          <div class="dev-card">
-            <div class="dev-av">
-              <i class="fas fa-code"></i>
-            </div>
-            <div class="dev-info">
-              <strong>Moussa Diouf</strong>
-              <span>Full Stack Developer</span>
-              <span class="dev-sp">& Ingénieur Réseau</span>
-            </div>
-          </div>
-          <div class="dev-tags">
-            <span><i class="fab fa-angular"></i> Angular</span>
-            <span><i class="fas fa-server"></i> Backend</span>
-            <span><i class="fas fa-network-wired"></i> Réseau</span>
-          </div>
-          <a
-            href="https://moussadioufportfolio.kesug.com"
-            target="_blank"
-            class="dev-link"
-          >
-            <i class="fas fa-external-link-alt"></i>
-            moussadioufportfolio.kesug.com
-          </a>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Bottom -->
-  <div class="footer-bottom">
-    <div class="container fbot-inner">
-      <p>© {{ year }} <strong>Ousseynou Gningue</strong> – Tous droits réservés</p>
-      <p>
-        Conçu avec <i class="fas fa-heart" style="color:#e25555"></i> par
-        <a href="https://moussadioufportfolio.kesug.com" target="_blank">
-          Moussa Diouf
-        </a>
-      </p>
-      <button class="top-btn" (click)="scrollTop()">
-        <i class="fas fa-chevron-up"></i>
-      </button>
-    </div>
+    <small>
+      © {{ year }} Ousseynou Gningue <br>
+      Développé par
+      <a href="https://moussadioufportfolio.kesug.com"
+         target="_blank">
+        Moussa Diouf
+      </a>
+    </small>
   </div>
 </footer>
 
-<!-- ════════════ WHATSAPP FAB ════════════ -->
-<div class="fab-wrap" [class.show]="fabVisible">
-  <span class="fab-tip">Contacter l'auteur</span>
+
+<!-- WHATSAPP FLOAT -->
+<div class="fab-wrap">
   <a [href]="fabUrl" target="_blank" class="fab-btn">
     <i class="fab fa-whatsapp"></i>
-    <span class="pulse"></span>
-    <span class="pulse p2"></span>
   </a>
 </div>
