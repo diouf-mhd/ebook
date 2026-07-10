@@ -165,6 +165,9 @@
               </button>
             </td>
             <td class="actions-cell">
+              <button class="act whatsapp-prod" (click)="testOrder(book)" title="Tester la commande WhatsApp">
+                <i class="fab fa-whatsapp"></i> Test
+              </button>
               <button class="act edit" (click)="editBook(book)">
                 Modifier
               </button>
@@ -198,4 +201,10 @@
       </div>
     </footer>
   </div>
+</div>
+
+<div class="fab-wrap" *ngIf="auth">
+  <a href="https://wa.me/221771308536" target="_blank" class="fab-btn">
+    <i class="fab fa-whatsapp"></i>
+  </a>
 </div>

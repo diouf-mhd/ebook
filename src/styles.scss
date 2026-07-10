@@ -719,3 +719,18 @@ tbody tr:hover {
     height: 260px; /* Légèrement plus petit sur smartphone pour économiser de l'espace */
   }
 }
+.act.whatsapp-prod {
+  background-color: #25d366;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-right: 5px;
+
+  &:hover {
+    background-color: #1ebd54;
+  }
+}
