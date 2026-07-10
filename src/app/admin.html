@@ -101,11 +101,25 @@
         </label>
       </div>
 
-      <textarea
-        [(ngModel)]="form.description"
-        placeholder="Description"
-        rows="4"
-      ></textarea>
+      <!-- ── ZONE DE DESCRIPTION BILINGUE (FR / WO) ── -->
+      <div class="form-grid">
+        <div>
+          <label style="font-size: 0.85rem; font-weight: 600; color: #4a5568; display: block; margin-bottom: 5px;">Description (Français)</label>
+          <textarea
+            [(ngModel)]="form.description"
+            placeholder="Résumé de l'œuvre en français..."
+            rows="4"
+          ></textarea>
+        </div>
+        <div>
+          <label style="font-size: 0.85rem; font-weight: 600; color: #4a5568; display: block; margin-bottom: 5px;">Description (Wolof)</label>
+          <textarea
+            [(ngModel)]="form.description_wo"
+            placeholder="Résumé de l'œuvre en wolof..."
+            rows="4"
+          ></textarea>
+        </div>
+      </div>
 
       <div class="toggle-row">
         <label>

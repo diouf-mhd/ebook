@@ -12,41 +12,32 @@ import { BookService, Book } from './book.service';
   styleUrl: './admin.scss'
 })
 export class AdminComponent implements OnInit {
-  /* ── ÉTAT INTERFACE & AUTHENTIFICATION ── */
   auth = false;
   code = '';
   editMode = false;
-
-  /* ── DONNÉES CATALOGUE ── */
   books: Book[] = [];
   cats = ['Roman', 'Poésie', 'Essai', 'Théâtre'];
   
-  // Modèle initial pour le formulaire
   form: any = { 
     id: null,
     title: '', 
     price: null, 
     category: 'Roman', 
-    description: '', 
+    description: '',    // Français
+    description_wo: '', // Wolof
     available: true, 
     cover: '' 
   };
 
-  constructor(
-    private bookService: BookService, 
-    private router: Router
-  ) {}
+  constructor(private bookService: BookService, private router: Router) {}
 
   ngOnInit(): void {
-    // Session automatique si déjà connecté précédemment
     if (localStorage.getItem('admin_auth') === 'true') {
       this.auth = true;
     }
-    // Abonnement au flux de données en temps réel
     this.bookService.books$.subscribe(b => this.books = b);
   }
 
-  /* ── SYSTÈME DE CONNEXION (CODE: 2027) ── */
   login(): void {
     if (this.code === '2027') {
       this.auth = true;
@@ -66,83 +57,53 @@ export class AdminComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  /* ── ACTIONS DE REQUÊTES WHATSAPP (TEST) ── */
   testOrder(book: any): void {
     const text = `Bonjour, je souhaite commander le livre "${book.title}" au prix de ${book.price} FCFA.`;
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/221771308536?text=${encodedText}`, '_blank');
   }
 
-  /* ── CRUD CATALOGUE LIVRES ── */
   saveBook(): void {
     if (!this.form.title || !this.form.price) {
-      alert('Veuillez remplir au moins le titre et le prix.');
+      alert('Veuillez remplir le titre et le prix.');
       return;
     }
 
-    if (this.editMode && this.form.id !== null) {
-      // Mode Modification
-      this.bookService.update(this.form.id, {
-        title: this.form.title,
-        description: this.form.description,
-        price: this.form.price,
-        category: this.form.category,
-        available: this.form.available,
-        cover: this.form.cover
-      });
+    if (this.editMode) {
+      this.bookService.updateBook(this.form);
     } else {
-      // Mode Ajout
-      this.bookService.add({
-        title: this.form.title,
-        description: this.form.description,
-        price: this.form.price,
-        category: this.form.category,
-        available: this.form.available,
-        cover: this.form.cover
-      });
+      this.bookService.addBook(this.form);
     }
-
-    this.cancelEdit(); // Réinitialise l'état du formulaire
+    this.cancelEdit();
   }
 
   editBook(book: Book): void {
     this.editMode = true;
-    this.form = { ...book }; // Copie profonde pour éviter l'édition directe dans le tableau
+    this.form = { ...book };
   }
 
   cancelEdit(): void {
     this.editMode = false;
-    this.form = { 
-      id: null,
-      title: '', 
-      price: null, 
-      category: 'Roman', 
-      description: '', 
-      available: true, 
-      cover: '' 
-    };
+    this.form = { id: null, title: '', price: null, category: 'Roman', description: '', description_wo: '', available: true, cover: '' };
   }
 
-  deleteBook(id: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
-      this.bookService.delete(id);
+  deleteBook(id: any): void {
+    if (confirm('Supprimer ce livre du catalogue Cloud ?')) {
+      this.bookService.deleteBook(id);
     }
   }
 
   toggleAvailability(book: Book): void {
     const updatedBook = { ...book, available: !book.available };
-    this.bookService.update(book.id, {
-      available: updatedBook.available
-    });
+    this.bookService.updateBook(updatedBook);
   }
 
-  /* ── CHARGEMENT ET CONVERSION IMAGE (BASE64) ── */
   onCoverUpload(event: any): void {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.form.cover = reader.result as string; // Stocke la chaîne Base64
+        this.form.cover = reader.result as string;
       };
       reader.readAsDataURL(file);
     }

@@ -2,7 +2,6 @@
 <header class="navbar">
   <div class="container nav-inner">
 
-    <!-- Logo & Retour Accueil -->
     <div class="nav-logo" (click)="scrollTo('hero')">
       <div class="logo-icon">
         <i class="fas fa-feather-alt"></i>
@@ -10,89 +9,78 @@
       <strong>Ousseynou Gningue</strong>
     </div>
 
-    <!-- BOUTON BURGER (Mobile) -->
+    <!-- SÉLECTEUR DE LANGUE PREMIUM -->
+    <div class="lang-selector">
+      <button [class.active]="currentLang === 'FR'" (click)="setLanguage('FR')">FR</button>
+      <button [class.active]="currentLang === 'WO'" (click)="setLanguage('WO')">WO</button>
+    </div>
+
     <button class="menu-toggle" (click)="toggleMenu()" [class.open]="menuOpen">
       <i class="fas" [class.fa-bars]="!menuOpen" [class.fa-times]="menuOpen"></i>
     </button>
 
-    <!-- LIENS DE NAVIGATION -->
     <nav class="nav-links" [class.mobile-open]="menuOpen">
-      <a class="nl" (click)="selectMenuRoute('hero')">Accueil</a>
-      <a class="nl" (click)="selectMenuRoute('about')">À propos</a>
-      <a class="nl" (click)="selectMenuRoute('books')">Livres</a>
+      <a class="nl" (click)="selectMenuRoute('hero')">{{ currentLang === 'FR' ? 'Accueil' : 'Kër' }}</a>
+      <a class="nl" (click)="selectMenuRoute('about')">{{ currentLang === 'FR' ? 'À propos' : 'Ci lëñu bëgg' }}</a>
+      <a class="nl" (click)="selectMenuRoute('books')">{{ currentLang === 'FR' ? 'Livres' : 'Téere yi' }}</a>
       <a class="nl" (click)="selectMenuRoute('contact')">Contact</a>
-
-      <!-- BOUTON ACCÈS DASHBOARD -->
-      <button class="nav-admin-btn" (click)="goAdmin()">
-        Admin
-      </button>
+      <button class="nav-admin-btn" (click)="goAdmin()">Admin</button>
     </nav>
-
   </div>
 </header>
 
 <!-- HERO SECTION -->
-<section id="hero" class="hero fade-slide">
+<section id="hero" class="hero">
   <div class="hero-bg"></div>
-
   <div class="container hero-content">
     <h1 class="hero-title">
-      <span class="small-text">Les mots de</span><br>
+      <span class="small-text">{{ currentLang === 'FR' ? 'Les mots de' : 'Baati' }}</span><br>
       <span class="big-text">Ousseynou Gningue</span>
     </h1>
-
     <p class="hero-desc">
-      Écrivain passionné partageant des œuvres
-      inspirantes qui touchent l’âme.
+      {{ currentLang === 'FR' ? 'Écrivain passionné partageant des œuvres inspirantes qui touchent l’âme.' : 'Bindkat bu bëgg liggéeyam, di séddoo téere yu am solo yuy laal xol yi.' }}
     </p>
-
     <button class="btn-primary-hero" (click)="scrollTo('books')">
-      Découvrir les livres
+      {{ currentLang === 'FR' ? 'Découvrir les livres' : 'Xool téere yi' }}
     </button>
   </div>
 </section>
 
 <!-- ABOUT SECTION -->
-<section id="about" class="fade-slide">
+<section id="about">
   <div class="container">
-    <h2>À propos</h2>
+    <h2>{{ currentLang === 'FR' ? 'À propos' : 'Ci bënñu' }}</h2>
     <p style="margin-top:20px;">
-      Ousseynou Gningue est un écrivain sénégalais
-      engagé dont les œuvres explorent l’identité,
-      la culture et l’espoir.
+      {{ currentLang === 'FR' ? 'Ousseynou Gningue est un écrivain sénégalais engagé dont les œuvres explorent l’identité, la culture et l’espoir.' : 'Ousseynou Gningue bindkat la bu dëkk Senegaal, liggéeyam mungi jëm ci dundal sunu koom-koom, sunu aada ak yaakaar.' }}
     </p>
   </div>
 </section>
 
 <!-- BOOKS SECTION -->
-<section id="books" class="fade-slide">
+<section id="books">
   <div class="container">
-    <h2>Mes Œuvres</h2>
+    <h2>{{ currentLang === 'FR' ? 'Mes Œuvres' : 'Samay Liggéey' }}</h2>
 
     <div class="books-grid">
       <div class="book-card" *ngFor="let book of books">
-        <!-- Couverture dynamique du livre -->
         <div class="book-card-cover" *ngIf="book.cover">
           <img [src]="book.cover" [alt]="book.title">
         </div>
         
         <h3>{{ book.title }}</h3>
-        <p>{{ book.description }}</p>
+        
+        <!-- Description alternative FR / Wolof -->
+        <p>{{ currentLang === 'FR' ? book.description : (book.description_wo || book.description) }}</p>
+        
         <strong>{{ book.price }} FCFA</strong>
 
         <div style="margin-top:10px;">
-          <!-- Bouton Commander disponible -->
-          <button
-            class="btn-order"
-            *ngIf="book.available"
-            (click)="order(book)">
+          <button class="btn-order" *ngIf="book.available" (click)="order(book)">
             <i class="fab fa-whatsapp"></i>
-            Commander
+            {{ currentLang === 'FR' ? 'Commander' : 'Jënd téere bi' }}
           </button>
-
-          <!-- Message d'indisponibilité -->
           <span *ngIf="!book.available" style="color:#e53935; font-weight: 600;">
-            Indisponible
+            {{ currentLang === 'FR' ? 'Indisponible' : 'Jeex na' }}
           </span>
         </div>
       </div>
@@ -101,43 +89,14 @@
 </section>
 
 <!-- CONTACT SECTION -->
-<section id="contact" class="fade-slide">
-  <div class="container" style="text-align:center;">
+<section id="contact" style="text-align:center;">
+  <div class="container">
     <h2>Contact</h2>
     <p style="margin:20px 0;">
-      Pour toute commande ou information,
-      contactez directement via WhatsApp.
+      {{ currentLang === 'FR' ? 'Pour toute commande ou information, contactez directement via WhatsApp.' : 'Su ngene bëggé jënd walla am yeneen xabar, ngen mën nio tontu ci WhatsApp.' }}
     </p>
-
-    <a [href]="fabUrl"
-       target="_blank"
-       class="btn-primary">
-      <i class="fab fa-whatsapp"></i>
-      WhatsApp
+    <a [href]="fabUrl" target="_blank" class="btn-primary">
+      <i class="fab fa-whatsapp"></i> WhatsApp
     </a>
   </div>
 </section>
-
-<!-- FOOTER -->
-<footer class="footer fade-slide">
-  <div class="container">
-    <h3>Ousseynou Gningue</h3>
-    <p>Dakar, Sénégal</p>
-
-    <small>
-      © {{ year }} Ousseynou Gningue <br>
-      Développé par
-      <a href="https://moussadioufportfolio.kesug.com"
-         target="_blank">
-        Moussa Diouf
-      </a>
-    </small>
-  </div>
-</footer>
-
-<!-- FLOATING WHATSAPP BUTTON -->
-<div class="fab-wrap">
-  <a [href]="fabUrl" target="_blank" class="fab-btn">
-    <i class="fab fa-whatsapp"></i>
-  </a>
-</div>

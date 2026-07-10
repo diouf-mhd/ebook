@@ -1,54 +1,80 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { BehaviorSubject, from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Book {
-  id: number;
+  id?: number;
   title: string;
-  description: string;
   price: number;
-  cover: string;
   category: string;
+  description: string;     // Français
+  description_wo?: string;  // Wolof
   available: boolean;
+  cover: string;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class BookService {
+  private supabaseUrl = 'https://zzrkitcfzjgvdgvynbrn.supabase.co';
+  private supabaseKey = 'sb_publishable_ccQPCKjeZUrgaO91EKXKvQ_uv3BKrvh';
+  private supabase: SupabaseClient;
 
-  private STORAGE_KEY = 'og_books';
-
-  private booksSubject = new BehaviorSubject<Book[]>(this.load());
+  private booksSubject = new BehaviorSubject<Book[]>([]);
   books$ = this.booksSubject.asObservable();
 
-  private load(): Book[] {
-    const data = localStorage.getItem(this.STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+  constructor() {
+    this.supabase = createClient(this.supabaseUrl, this.supabaseKey);
+    this.fetchBooks(); // Charge automatiquement les livres au démarrage
   }
 
-  private save(books: Book[]) {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(books));
-    this.booksSubject.next(books);
+  // LIRE LES LIVRES (Cloud)
+  async fetchBooks() {
+    const { data, error } = await this.supabase
+      .from('books')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Erreur lors de la récupération:', error);
+    } else {
+      this.booksSubject.next(data || []);
+    }
   }
 
-  getAll() {
-    return this.booksSubject.getValue();
+  // AJOUTER UN LIVRE
+  async addBook(book: Book) {
+    const { data, error } = await this.supabase
+      .from('books')
+      .insert([book])
+      .select();
+
+    if (error) console.error('Erreur ajout:', error);
+    this.fetchBooks(); // Rafraîchit la liste pour tout le monde
   }
 
-  add(book: Omit<Book, 'id'>) {
-    const newBook: Book = {
-      ...book,
-      id: Date.now()
-    };
-    this.save([...this.getAll(), newBook]);
+  // MODIFIER UN LIVRE
+  async updateBook(book: Book) {
+    const { data, error } = await this.supabase
+      .from('books')
+      .update(book)
+      .eq('id', book.id)
+      .select();
+
+    if (error) console.error('Erreur modification:', error);
+    this.fetchBooks();
   }
 
-  update(id: number, data: Partial<Book>) {
-    const updated = this.getAll().map(b =>
-      b.id === id ? { ...b, ...data } : b
-    );
-    this.save(updated);
-  }
+  // SUPPRIMER UN LIVRE
+  async deleteBook(id: number) {
+    const { error } = await this.supabase
+      .from('books')
+      .delete()
+      .eq('id', id);
 
-  delete(id: number) {
-    this.save(this.getAll().filter(b => b.id !== id));
+    if (error) console.error('Erreur suppression:', error);
+    this.fetchBooks();
   }
 }

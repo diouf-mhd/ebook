@@ -126,3 +126,26 @@ body {
     padding: 0 16px;
   }
 }
+
+.lang-selector {
+  display: flex;
+  gap: 5px;
+  margin-right: 15px;
+
+  button {
+    background: transparent;
+    border: 1px solid #002f6c;
+    color: #002f6c;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active, &:hover {
+      background-color: #002f6c;
+      color: #ffffff;
+    }
+  }
+}
