@@ -390,3 +390,141 @@ td {
     width: 95%;
   }
 }
+
+/* ════════════════════════════════════════
+   RESPONSIVE ADMIN DESIGN (MOBILE)
+════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  
+  /* 1. Header de l'Admin */
+  .admin-nav-inner {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 15px 10px;
+
+    .btn-secondary {
+      width: 100%; /* Les boutons prennent toute la largeur */
+      justify-content: center;
+    }
+  }
+
+  /* 2. Les cartes de statistiques (Grid -> Colonne unique) */
+  .d-cards {
+    grid-template-columns: 1fr !important;
+    gap: 15px;
+    padding: 0 10px;
+  }
+
+  /* 3. Le Formulaire d'Ajout / Édition */
+  .admin-form {
+    padding: 15px !important;
+    margin: 10px;
+    
+    .admin-form-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      
+      .form-actions {
+        width: 100%;
+        .btn-secondary { width: 100%; }
+      }
+    }
+
+    /* Force les champs côte à côte à s'empiler */
+    .form-grid {
+      grid-template-columns: 1fr !important;
+      gap: 15px;
+    }
+
+    input, select, textarea, .btn-primary {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  /* 4. Transformation du Tableau en "Cartes" Responsives */
+  .tbl-wrap {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0 10px;
+
+    table,有用, thead, tbody, th, td, tr { 
+      display: block; /* On casse la structure rigide du tableau */
+    }
+
+    /* Cache complètement les en-têtes du tableau */
+    thead tr { 
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+
+    tr {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #edf2f7;
+    }
+
+    td { 
+      border: none;
+      padding: 8px 0;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: right;
+      font-size: 0.95rem;
+
+      /* Ajoute des étiquettes automatiques pour savoir à quoi correspond la donnée */
+      &:nth-of-type(2)::before { content: "Titre :"; font-weight: 600; color: #718096; }
+      &:nth-of-type(3)::before { content: "Prix :"; font-weight: 600; color: #718096; }
+      &:nth-of-type(4)::before { content: "Statut :"; font-weight: 600; color: #718096; }
+      &:nth-of-type(5)::before { content: "Actions :"; font-weight: 600; color: #718096; }
+    }
+
+    /* Alignement spécifique pour la cellule de couverture */
+    .cover-cell {
+      justify-content: center;
+      background: #f7fafc;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+
+      img {
+        max-height: 120px;
+        object-fit: contain;
+      }
+    }
+
+    /* Ajustement de la zone des boutons d'actions */
+    .actions-cell {
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      width: 100%;
+
+      .act {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        flex: 1; /* Les boutons se partagent l'espace équitablement */
+        min-width: 80px;
+        text-align: center;
+      }
+    }
+  }
+
+  /* 5. Footer de l'Admin */
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    padding: 20px 10px;
+  }
+}
