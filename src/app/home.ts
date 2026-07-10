@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit {
   menuOpen = false;
   year = new Date().getFullYear();
   fabUrl = "https://wa.me/221771308536";
-  email = "Ogning196@gmail.com";
+  email = "ogning196@gmail.com";
 
   // 1. On déclare l'Observable (sans utiliser "this" ici)
   books$!: Observable<Book[]>;
