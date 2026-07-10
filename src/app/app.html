@@ -61,19 +61,15 @@
   <div class="container">
     <h2>{{ currentLang === 'FR' ? 'Mes Œuvres' : 'Samay Liggéey' }}</h2>
 
-    <!-- Vérification de sécurité si le tableau met du temps à arriver -->
-    <div class="books-grid" *ngIf="books && books.length > 0; else noBooks">
-      <div class="book-card" *ngFor="let book of books">
+    <!-- Utilisation du pipe async pour forcer le rendu au rafraîchissement -->
+    <div class="books-grid" *ngIf="(books$ | async) as catalogue; else noBooks">
+      <div class="book-card" *ngFor="let book of catalogue">
         <div class="book-card-cover" *ngIf="book.cover">
           <img [src]="book.cover" [alt]="book.title">
         </div>
         
         <h3>{{ book.title }}</h3>
-        
-        <!-- Sécurité : Si book.description est vide, on cherche une autre clé texte de l'objet -->
-        <p>{{ book.description || book['description_fr'] || 'Aucune description disponible.' }}</p>
-        
-        <strong>{{ book.price }} FCFA</strong>
+<p>{{ book.description || ($any(book)).description_fr || 'Aucune description disponible.' }}</p>        <strong>{{ book.price }} FCFA</strong>
 
         <div style="margin-top:10px;">
           <button class="btn-order" *ngIf="book.available" (click)="order(book)">
@@ -87,7 +83,7 @@
       </div>
     </div>
 
-    <!-- Template d'attente pendant le chargement initial -->
+    <!-- Fallback si le tableau est vide au tout premier chargement -->
     <ng-template #noBooks>
       <p style="text-align: center; color: #718096; padding: 20px;">
         Chargement du catalogue en cours...

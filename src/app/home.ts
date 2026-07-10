@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { BookService, Book } from './book.service';
 
 @Component({
@@ -11,46 +11,26 @@ import { BookService, Book } from './book.service';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
   currentLang: 'FR' | 'WO' = 'FR';
   menuOpen = false;
   year = new Date().getFullYear();
   fabUrl = "https://wa.me/221771308536";
   email = "Ogning196@gmail.com";
 
-  books: Book[] = [];
-  private bookSub!: Subscription;
+  // 1. On déclare l'Observable (sans utiliser "this" ici)
+  books$!: Observable<Book[]>;
 
-  constructor(
-    private bookService: BookService, 
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+  // 2. Le service est proprement injecté ici
+  constructor(private bookService: BookService, private router: Router) {}
 
   ngOnInit(): void {
-    this.bookSub = this.bookService.books$.subscribe({
-      next: (data) => {
-        console.log('Livres chargés dans la vitrine:', data);
-        this.books = data || [];
-        
-        // setTimeout force Angular à exécuter la détection au prochain tick système,
-        // ce qui résout le problème du tableau vide au rafraîchissement initial
-        setTimeout(() => {
-          this.cdr.markForCheck();
-          this.cdr.detectChanges();
-        }, 0);
-      },
-      error: (err) => console.error('Erreur flux vitrine:', err)
-    });
-  }
-
-  ngOnDestroy(): void {
-    if (this.bookSub) this.bookSub.unsubscribe();
+    // 3. On fait l'affectation en toute sécurité au démarrage du composant
+    this.books$ = this.bookService.books$;
   }
 
   setLanguage(lang: 'FR' | 'WO'): void {
     this.currentLang = lang;
-    this.cdr.detectChanges();
   }
 
   toggleMenu(): void {
