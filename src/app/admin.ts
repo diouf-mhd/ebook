@@ -80,12 +80,26 @@ export class AdminComponent implements OnInit {
       return;
     }
 
-    if (this.editMode) {
+    if (this.editMode && this.form.id !== null) {
       // Mode Modification
-      this.bookService.updateBook(this.form);
+      this.bookService.update(this.form.id, {
+        title: this.form.title,
+        description: this.form.description,
+        price: this.form.price,
+        category: this.form.category,
+        available: this.form.available,
+        cover: this.form.cover
+      });
     } else {
       // Mode Ajout
-      this.bookService.addBook(this.form);
+      this.bookService.add({
+        title: this.form.title,
+        description: this.form.description,
+        price: this.form.price,
+        category: this.form.category,
+        available: this.form.available,
+        cover: this.form.cover
+      });
     }
 
     this.cancelEdit(); // Réinitialise l'état du formulaire
@@ -109,15 +123,17 @@ export class AdminComponent implements OnInit {
     };
   }
 
-  deleteBook(id: any): void {
+  deleteBook(id: number): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
-      this.bookService.deleteBook(id);
+      this.bookService.delete(id);
     }
   }
 
   toggleAvailability(book: Book): void {
     const updatedBook = { ...book, available: !book.available };
-    this.bookService.updateBook(updatedBook);
+    this.bookService.update(book.id, {
+      available: updatedBook.available
+    });
   }
 
   /* ── CHARGEMENT ET CONVERSION IMAGE (BASE64) ── */
