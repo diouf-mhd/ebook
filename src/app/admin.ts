@@ -18,7 +18,6 @@ export class AdminComponent implements OnInit {
   books: Book[] = [];
   cats = ['Roman', 'Poésie', 'Essai', 'Théâtre'];
   
-  // Modèle nettoyé, uniquement avec la description en Français
   form: any = { 
     id: null,
     title: '', 
@@ -65,12 +64,11 @@ export class AdminComponent implements OnInit {
 
   async saveBook(): Promise<void> {
     if (!this.form.title || !this.form.price) {
-      alert('Veuillez remplir au moins le titre et le prix.');
+      alert('Veuillez remplir le titre et le prix.');
       return;
     }
 
     try {
-      // On prépare un objet propre pour Supabase
       const bookData: any = {
         title: this.form.title,
         price: this.form.price,
@@ -87,49 +85,33 @@ export class AdminComponent implements OnInit {
         await this.bookService.addBook(bookData);
       }
 
-      this.cancelEdit(); // Réinitialise le formulaire après succès
-      alert(this.editMode ? 'Livre mis à jour avec succès !' : 'Livre ajouté avec succès !');
+      this.cancelEdit();
+      alert('Enregistrement réussi avec succès !');
     } catch (error) {
-      console.error("Erreur lors de la sauvegarde :", error);
-      alert("Une erreur est survenue lors de l'enregistrement sur Supabase.");
+      console.error(error);
+      alert("Une erreur est survenue lors de la sauvegarde.");
     }
   }
 
   editBook(book: Book): void {
     this.editMode = true;
-    this.form = { ...book }; // Copie pour éviter la modification directe
+    this.form = { ...book };
   }
 
   cancelEdit(): void {
     this.editMode = false;
-    this.form = { 
-      id: null, 
-      title: '', 
-      price: null, 
-      category: 'Roman', 
-      description: '', 
-      available: true, 
-      cover: '' 
-    };
+    this.form = { id: null, title: '', price: null, category: 'Roman', description: '', available: true, cover: '' };
   }
 
   async deleteBook(id: any): Promise<void> {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce livre du Cloud ?')) {
-      try {
-        await this.bookService.deleteBook(id);
-      } catch (error) {
-        console.error(error);
-      }
+    if (confirm('Supprimer ce livre ?')) {
+      await this.bookService.deleteBook(id);
     }
   }
 
   async toggleAvailability(book: Book): Promise<void> {
-    try {
-      const updatedBook = { ...book, available: !book.available };
-      await this.bookService.updateBook(updatedBook);
-    } catch (error) {
-      console.error(error);
-    }
+    const updatedBook = { ...book, available: !book.available };
+    await this.bookService.updateBook(updatedBook);
   }
 
   onCoverUpload(event: any): void {
@@ -137,7 +119,7 @@ export class AdminComponent implements OnInit {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.form.cover = reader.result as string; // Stocke le Base64 propre
+        this.form.cover = reader.result as string;
       };
       reader.readAsDataURL(file);
     }

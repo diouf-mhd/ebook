@@ -12,15 +12,12 @@ import { BookService, Book } from './book.service';
   styleUrl: './app.scss'
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  /* ── LANGUE PRINCIPALE ── */
-  currentLang: 'FR' | 'WO' = 'FR'; // Français par défaut, Wolof en secondaire
-
-  /* ── ÉTAT INTERFACE ── */
+  currentLang: 'FR' | 'WO' = 'FR';
   menuOpen = false;
   year = new Date().getFullYear();
   fabUrl = "https://wa.me/221771308536";
+  email = "Ogning196@gmail.com";
 
-  /* ── DONNÉES ── */
   books: Book[] = [];
   private bookSub!: Subscription;
 
@@ -40,7 +37,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.currentLang = lang;
   }
 
-  /* ── NAVIGATION RESPONSIVE ── */
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
@@ -61,7 +57,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/admin']);
   }
 
-  /* ── ACTION DE COMMANDE ── */
   order(book: Book): void {
     const text = `Bonjour, je souhaite commander le livre "${book.title}" au prix de ${book.price} FCFA.`;
     const encodedText = encodeURIComponent(text);
