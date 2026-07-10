@@ -18,13 +18,13 @@ export class AdminComponent implements OnInit {
   books: Book[] = [];
   cats = ['Roman', 'Poésie', 'Essai', 'Théâtre'];
   
+  // Modèle nettoyé, uniquement avec la description en Français
   form: any = { 
     id: null,
     title: '', 
     price: null, 
     category: 'Roman', 
-    description: '',    // Français
-    description_wo: '', // Wolof
+    description: '', 
     available: true, 
     cover: '' 
   };
@@ -63,39 +63,73 @@ export class AdminComponent implements OnInit {
     window.open(`https://wa.me/221771308536?text=${encodedText}`, '_blank');
   }
 
-  saveBook(): void {
+  async saveBook(): Promise<void> {
     if (!this.form.title || !this.form.price) {
-      alert('Veuillez remplir le titre et le prix.');
+      alert('Veuillez remplir au moins le titre et le prix.');
       return;
     }
 
-    if (this.editMode) {
-      this.bookService.updateBook(this.form);
-    } else {
-      this.bookService.addBook(this.form);
+    try {
+      // On prépare un objet propre pour Supabase
+      const bookData: any = {
+        title: this.form.title,
+        price: this.form.price,
+        category: this.form.category,
+        description: this.form.description,
+        available: this.form.available,
+        cover: this.form.cover
+      };
+
+      if (this.editMode) {
+        bookData.id = this.form.id;
+        await this.bookService.updateBook(bookData);
+      } else {
+        await this.bookService.addBook(bookData);
+      }
+
+      this.cancelEdit(); // Réinitialise le formulaire après succès
+      alert(this.editMode ? 'Livre mis à jour avec succès !' : 'Livre ajouté avec succès !');
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde :", error);
+      alert("Une erreur est survenue lors de l'enregistrement sur Supabase.");
     }
-    this.cancelEdit();
   }
 
   editBook(book: Book): void {
     this.editMode = true;
-    this.form = { ...book };
+    this.form = { ...book }; // Copie pour éviter la modification directe
   }
 
   cancelEdit(): void {
     this.editMode = false;
-    this.form = { id: null, title: '', price: null, category: 'Roman', description: '', description_wo: '', available: true, cover: '' };
+    this.form = { 
+      id: null, 
+      title: '', 
+      price: null, 
+      category: 'Roman', 
+      description: '', 
+      available: true, 
+      cover: '' 
+    };
   }
 
-  deleteBook(id: any): void {
-    if (confirm('Supprimer ce livre du catalogue Cloud ?')) {
-      this.bookService.deleteBook(id);
+  async deleteBook(id: any): Promise<void> {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce livre du Cloud ?')) {
+      try {
+        await this.bookService.deleteBook(id);
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
-  toggleAvailability(book: Book): void {
-    const updatedBook = { ...book, available: !book.available };
-    this.bookService.updateBook(updatedBook);
+  async toggleAvailability(book: Book): Promise<void> {
+    try {
+      const updatedBook = { ...book, available: !book.available };
+      await this.bookService.updateBook(updatedBook);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   onCoverUpload(event: any): void {
@@ -103,7 +137,7 @@ export class AdminComponent implements OnInit {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.form.cover = reader.result as string;
+        this.form.cover = reader.result as string; // Stocke le Base64 propre
       };
       reader.readAsDataURL(file);
     }
