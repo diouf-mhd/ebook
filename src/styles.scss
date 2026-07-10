@@ -734,3 +734,35 @@ tbody tr:hover {
     background-color: #1ebd54;
   }
 }
+/* ── FORCE LA VISIBILITÉ DU BOUTON COMMANDER ── */
+.btn-order {
+  display: inline-flex !important;  /* Force l'affichage du bouton */
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;                     /* Prend toute la largeur de la carte pour être bien visible */
+  padding: 12px 20px;
+  background-color: #25d366;       /* Vert WhatsApp officiel */
+  color: #ffffff !important;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  visibility: visible !important;  /* Annule tout masquage accidentel */
+  opacity: 1 !important;           /* Force l'opacité à 100% */
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    background-color: #1ebd54;     /* Vert un peu plus foncé au survol */
+    transform: translateY(-2px);   /* Petit effet dynamique de survol */
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
