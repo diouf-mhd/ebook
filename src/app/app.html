@@ -61,7 +61,8 @@
   <div class="container">
     <h2>{{ currentLang === 'FR' ? 'Mes Œuvres' : 'Samay Liggéey' }}</h2>
 
-    <div class="books-grid">
+    <!-- Vérification de sécurité si le tableau met du temps à arriver -->
+    <div class="books-grid" *ngIf="books && books.length > 0; else noBooks">
       <div class="book-card" *ngFor="let book of books">
         <div class="book-card-cover" *ngIf="book.cover">
           <img [src]="book.cover" [alt]="book.title">
@@ -69,8 +70,8 @@
         
         <h3>{{ book.title }}</h3>
         
-        <!-- Affichage direct et sécurisé de la description sans filtre bloquant -->
-        <p>{{ book?.description }}</p>
+        <!-- Sécurité : Si book.description est vide, on cherche une autre clé texte de l'objet -->
+        <p>{{ book.description || book['description_fr'] || 'Aucune description disponible.' }}</p>
         
         <strong>{{ book.price }} FCFA</strong>
 
@@ -85,6 +86,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Template d'attente pendant le chargement initial -->
+    <ng-template #noBooks>
+      <p style="text-align: center; color: #718096; padding: 20px;">
+        Chargement du catalogue en cours...
+      </p>
+    </ng-template>
   </div>
 </section>
 
@@ -112,6 +120,7 @@
     <div>
       <strong style="color: #fff; font-size: 1.1rem;">Ousseynou Gningue</strong>
       <p style="margin: 5px 0 0 0;">{{ currentLang === 'FR' ? 'Écrivain & Auteur' : 'Bindkat' }} © {{ year }}</p>
+      
       <!-- Signature Crédits Développeur -->
       <p style="margin-top: 10px; font-size: 0.8rem; color: #718096;">
         Développé par <strong>Moussa Diouf</strong> | 

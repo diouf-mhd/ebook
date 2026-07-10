@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -21,14 +21,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   books: Book[] = [];
   private bookSub!: Subscription;
 
-  constructor(private bookService: BookService, private router: Router) {}
+  constructor(
+    private bookService: BookService, 
+    private router: Router,
+    private cdr: ChangeDetectorRef // Ajouté pour forcer la mise à jour de la vue
+  ) {}
 
   ngOnInit(): void {
     this.bookSub = this.bookService.books$.subscribe({
       next: (data) => {
-        // Log de sécurité pour inspecter la structure réelle reçue dans la console
         console.log('Livres chargés dans la vitrine:', data);
-        this.books = data;
+        this.books = data || [];
+        this.cdr.detectChanges(); // Force Angular à rafraîchir le HTML immédiatement
       },
       error: (err) => console.error('Erreur flux vitrine:', err)
     });
@@ -40,7 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   setLanguage(lang: 'FR' | 'WO'): void {
     this.currentLang = lang;
-    // On ne touche pas au tableau de livres ici pour éviter les ruptures d'affichage
+    this.cdr.detectChanges(); // Force le rafraîchissement au changement de langue
   }
 
   toggleMenu(): void {
