@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private bookService: BookService, 
     private router: Router,
-    private cdr: ChangeDetectorRef // Ajouté pour forcer la mise à jour de la vue
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -32,7 +32,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       next: (data) => {
         console.log('Livres chargés dans la vitrine:', data);
         this.books = data || [];
-        this.cdr.detectChanges(); // Force Angular à rafraîchir le HTML immédiatement
+        
+        // setTimeout force Angular à exécuter la détection au prochain tick système,
+        // ce qui résout le problème du tableau vide au rafraîchissement initial
+        setTimeout(() => {
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+        }, 0);
       },
       error: (err) => console.error('Erreur flux vitrine:', err)
     });
@@ -44,7 +50,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   setLanguage(lang: 'FR' | 'WO'): void {
     this.currentLang = lang;
-    this.cdr.detectChanges(); // Force le rafraîchissement au changement de langue
+    this.cdr.detectChanges();
   }
 
   toggleMenu(): void {
