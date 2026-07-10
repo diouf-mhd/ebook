@@ -1,6 +1,8 @@
+<!-- NAVBAR -->
 <header class="navbar">
   <div class="container nav-inner">
 
+    <!-- Logo & Retour Accueil -->
     <div class="nav-logo" (click)="scrollTo('hero')">
       <div class="logo-icon">
         <i class="fas fa-feather-alt"></i>
@@ -8,16 +10,19 @@
       <strong>Ousseynou Gningue</strong>
     </div>
 
+    <!-- BOUTON BURGER (Mobile) -->
     <button class="menu-toggle" (click)="toggleMenu()" [class.open]="menuOpen">
       <i class="fas" [class.fa-bars]="!menuOpen" [class.fa-times]="menuOpen"></i>
     </button>
 
+    <!-- LIENS DE NAVIGATION -->
     <nav class="nav-links" [class.mobile-open]="menuOpen">
       <a class="nl" (click)="selectMenuRoute('hero')">Accueil</a>
       <a class="nl" (click)="selectMenuRoute('about')">À propos</a>
       <a class="nl" (click)="selectMenuRoute('books')">Livres</a>
       <a class="nl" (click)="selectMenuRoute('contact')">Contact</a>
 
+      <!-- BOUTON ACCÈS DASHBOARD -->
       <button class="nav-admin-btn" (click)="goAdmin()">
         Admin
       </button>
@@ -26,7 +31,7 @@
   </div>
 </header>
 
-
+<!-- HERO SECTION -->
 <section id="hero" class="hero fade-slide">
   <div class="hero-bg"></div>
 
@@ -47,7 +52,7 @@
   </div>
 </section>
 
-
+<!-- ABOUT SECTION -->
 <section id="about" class="fade-slide">
   <div class="container">
     <h2>À propos</h2>
@@ -59,13 +64,14 @@
   </div>
 </section>
 
-
+<!-- BOOKS SECTION -->
 <section id="books" class="fade-slide">
   <div class="container">
     <h2>Mes Œuvres</h2>
 
     <div class="books-grid">
       <div class="book-card" *ngFor="let book of books">
+        <!-- Couverture dynamique du livre -->
         <div class="book-card-cover" *ngIf="book.cover">
           <img [src]="book.cover" [alt]="book.title">
         </div>
@@ -75,6 +81,7 @@
         <strong>{{ book.price }} FCFA</strong>
 
         <div style="margin-top:10px;">
+          <!-- Bouton Commander disponible -->
           <button
             class="btn-order"
             *ngIf="book.available"
@@ -83,6 +90,7 @@
             Commander
           </button>
 
+          <!-- Message d'indisponibilité -->
           <span *ngIf="!book.available" style="color:#e53935; font-weight: 600;">
             Indisponible
           </span>
@@ -92,7 +100,7 @@
   </div>
 </section>
 
-
+<!-- CONTACT SECTION -->
 <section id="contact" class="fade-slide">
   <div class="container" style="text-align:center;">
     <h2>Contact</h2>
@@ -110,7 +118,7 @@
   </div>
 </section>
 
-
+<!-- FOOTER -->
 <footer class="footer fade-slide">
   <div class="container">
     <h3>Ousseynou Gningue</h3>
@@ -127,7 +135,7 @@
   </div>
 </footer>
 
-
+<!-- FLOATING WHATSAPP BUTTON -->
 <div class="fab-wrap">
   <a [href]="fabUrl" target="_blank" class="fab-btn">
     <i class="fab fa-whatsapp"></i>

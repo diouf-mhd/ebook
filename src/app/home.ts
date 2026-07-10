@@ -1,69 +1,78 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { BookService, Book } from './book.service'; // Dans le même dossier
+import { BookService, Book } from './book.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './app.html', // Utilise ton HTML vitrine actuel
-  styleUrl: './app.scss'     // Utilise tes styles vitrine actuels
+  imports: [CommonModule, FormsModule],
+  templateUrl: './app.html',
+  styleUrls: ['./app.scss']
 })
-export class HomeComponent implements OnInit, OnDestroy {
-  /* ── ÉTAT INTERFACE ── */
-  menuOpen = false;
-  year = new Date().getFullYear();
-  fabUrl = "https://wa.me/221771308536"; // Ton WhatsApp
-
-  /* ── DONNÉES ── */
+export class HomeComponent implements OnInit {
   books: Book[] = [];
-  private bookSub!: Subscription;
+  year = new Date().getFullYear();
+  menuOpen = false;
 
   constructor(
     private bookService: BookService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private pid: Object
   ) {}
 
+
   ngOnInit(): void {
-    this.bookSub = this.bookService.books$.subscribe(b => {
+    this.bookService.books$.subscribe(b => {
       this.books = b;
+    });
+
+    if (!isPlatformBrowser(this.pid)) return;
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.2 });
+
+    setTimeout(() => {
+      document.querySelectorAll('.fade-slide')
+        .forEach(el => observer.observe(el));
+    }, 300);
+  }
+
+  scrollTo(id: string): void {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: 'smooth'
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.bookSub) {
-      this.bookSub.unsubscribe();
-    }
+  goAdmin(): void {
+    this.router.navigate(['/admin']);
   }
 
-  /* ── NAVIGATION RESPONSIVE ── */
+  order(book: Book): void {
+    const msg = encodeURIComponent(
+      `Bonjour 👋 Je souhaite commander ${book.title}`
+    );
+    window.open(`https://wa.me/221771308536?text=${msg}`, '_blank');
+  }
+
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 
-  selectMenuRoute(targetId: string): void {
+  selectMenuRoute(section: string): void {
     this.menuOpen = false;
-    this.scrollTo(targetId);
+    this.scrollTo(section);
   }
 
-  scrollTo(id: string): void {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  goAdmin(): void {
-    this.menuOpen = false;
-    this.router.navigate(['/admin']);
-  }
-
-  /* ── ACTION DE COMMANDE ── */
-  order(book: Book): void {
-    const text = `Bonjour, je souhaite commander le livre "${book.title}" au prix de ${book.price} FCFA.`;
-    const encodedText = encodeURIComponent(text);
-    window.open(`https://wa.me/221771308536?text=${encodedText}`, '_blank');
+  get fabUrl(): string {
+    return `https://wa.me/221771308536?text=${encodeURIComponent(
+      'Bonjour 👋 Je vous contacte depuis votre site.'
+    )}`;
   }
 }
