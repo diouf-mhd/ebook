@@ -168,3 +168,21 @@ html {
     transform: translateY(0);
   }
 }
+// Comportement de défilement natif fluide
+html {
+  scroll-behavior: smooth;
+}
+
+// État initial (caché et légèrement décalé vers le bas)
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: opacity, transform;
+}
+
+// État final après défilement (apparition douce et progressive)
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

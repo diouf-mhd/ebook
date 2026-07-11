@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -11,22 +11,28 @@ import { BookService, Book } from './book.service';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
   currentLang: 'FR' | 'WO' = 'FR';
   menuOpen = false;
   year = new Date().getFullYear();
   fabUrl = "https://wa.me/221771308536";
-  email = "Ogning196@gmail.com";
+  email = "ogning196@gmail.com"; // E-mail corrigé
 
-  // 1. Déclaration de l'Observable pour le pipe async
   books$!: Observable<Book[]>;
 
-  // 2. Injection des dépendances dans le constructeur
-  constructor(private bookService: BookService, private router: Router) {}
+  constructor(
+    private bookService: BookService, 
+    private router: Router,
+    private elRef: ElementRef // Injecté pour cibler les éléments du DOM
+  ) {}
 
   ngOnInit(): void {
-    // 3. Liaison sécurisée au flux de données de Supabase au démarrage
     this.books$ = this.bookService.books$;
+  }
+
+  ngAfterViewInit(): void {
+    // Initialise l'apparition dynamique en fondu des éléments au défilement
+    this.initScrollReveal();
   }
 
   setLanguage(lang: 'FR' | 'WO'): void {
@@ -42,7 +48,7 @@ export class HomeComponent implements OnInit {
     this.scrollTo(targetId);
   }
 
-  // Correction de la méthode pour stabiliser le DOM avant le scroll fluide
+  // Défilement fluide, plus stable et dynamique vers les sections
   scrollTo(id: string): void {
     setTimeout(() => {
       const element = document.getElementById(id);
@@ -52,7 +58,34 @@ export class HomeComponent implements OnInit {
           block: 'start' 
         });
       }
-    }, 50); // Ce délai de 50ms laisse le temps aux animations CSS et au DOM de se synchroniser
+    }, 80); // Léger délai augmenté pour laisser l'animation respirer
+  }
+
+  // Gestionnaire de fondu dynamique (Fade-In Reveal)
+  private initScrollReveal(): void {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1 // L'élément commence à apparaître dès que 10% est visible
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Ajoute la classe CSS qui déclenche le fondu dynamique
+          entry.target.classList.add('reveal-visible');
+        }
+      });
+    }, observerOptions);
+
+    // On cible toutes les sections et les cartes à animer
+    setTimeout(() => {
+      const targets = this.elRef.nativeElement.querySelectorAll('.reveal-effect, .book-card');
+      targets.forEach((target: HTMLElement) => {
+        target.classList.add('reveal-hidden');
+        observer.observe(target);
+      });
+    }, 500); // Laisse le temps aux livres de Supabase d'être injectés dans le DOM
   }
 
   goAdmin(): void {
