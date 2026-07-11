@@ -16,16 +16,16 @@ export class HomeComponent implements OnInit {
   menuOpen = false;
   year = new Date().getFullYear();
   fabUrl = "https://wa.me/221771308536";
-  email = "ogning196@gmail.com";
+  email = "Ogning196@gmail.com";
 
-  // 1. On déclare l'Observable (sans utiliser "this" ici)
+  // 1. Déclaration de l'Observable pour le pipe async
   books$!: Observable<Book[]>;
 
-  // 2. Le service est proprement injecté ici
+  // 2. Injection des dépendances dans le constructeur
   constructor(private bookService: BookService, private router: Router) {}
 
   ngOnInit(): void {
-    // 3. On fait l'affectation en toute sécurité au démarrage du composant
+    // 3. Liaison sécurisée au flux de données de Supabase au démarrage
     this.books$ = this.bookService.books$;
   }
 
@@ -42,11 +42,17 @@ export class HomeComponent implements OnInit {
     this.scrollTo(targetId);
   }
 
+  // Correction de la méthode pour stabiliser le DOM avant le scroll fluide
   scrollTo(id: string): void {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 50); // Ce délai de 50ms laisse le temps aux animations CSS et au DOM de se synchroniser
   }
 
   goAdmin(): void {
